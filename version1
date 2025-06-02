@@ -1,4 +1,4 @@
-import tkinter as tk
+mport tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
@@ -57,26 +57,9 @@ def abrir_datos_trabajador():
             "Turno": turno
         }
 
-        datos_trabajadores.append(datos)
+        datos_trabajadores.append(datos) 
 
-        mensaje = f"Nombre: {nombre}\nEdad: {edad}\nGénero: {genero}\nCURP: {curp}\nNSS: {NSS}\nDomicilio: {domicilio}\nPuesto: {puesto}\nTurno: {turno}"
-        messagebox.showinfo("Datos registrados", mensaje)
-
-        ventana_lista = tk.Toplevel()
-        ventana_lista.title("Todos los trabajadores registrados")
-        ventana_lista.geometry("400x400")
-        ventana_lista.config(bg="white")
-
-        tk.Label(ventana_lista, text="Lista de trabajadores", font=("Arial", 12, "bold"), bg="lightblue").pack(pady=10, fill="x")
-
-        texto = tk.Text(ventana_lista, wrap="word")
-        texto.pack(expand=True, fill="both", padx=10, pady=5)
-
-        for i, trabajador in enumerate(datos_trabajadores, 1):
-            texto.insert("end", f"Trabajador #{i}:\n")
-            for clave, valor in trabajador.items():
-                texto.insert("end", f"  {clave}: {valor}\n")
-            texto.insert("end", "\n")
+        messagebox.showinfo("Datos registrados", "Los datos se registraron correctamente.")
 
     tk.Button(ventana_datos, text="Registrar datos", command=mostrar_info).pack(pady=10)
 
@@ -112,15 +95,36 @@ def abrir_solicitud():
 
     tk.Button(ventana_solicitud, text="Enviar Solicitud", command=enviar).pack(pady=15)
 
+def abrir_registros():
+    ventana_registros = tk.Toplevel()
+    ventana_registros.title("Registros de Trabajadores")
+    ventana_registros.geometry("450x400")
+    ventana_registros.config(bg="white")
+
+    tk.Label(ventana_registros, text="Lista de trabajadores registrados", font=("Arial", 12, "bold"), bg="lightblue").pack(pady=10, fill="x")
+
+    texto = tk.Text(ventana_registros, wrap="word")
+    texto.pack(expand=True, fill="both", padx=10, pady=5)
+
+    if datos_trabajadores:
+        for i, trabajador in enumerate(datos_trabajadores, 1):
+            texto.insert("end", f"Trabajador #{i}:\n")
+            for clave, valor in trabajador.items():
+                texto.insert("end", f"  {clave}: {valor}\n")
+            texto.insert("end", "\n")
+    else:
+        texto.insert("end", "No hay trabajadores registrados aún.")
+
 ventana_principal = tk.Tk()
 ventana_principal.title("Vacaciones Hospital")
-ventana_principal.geometry("300x250")
+ventana_principal.geometry("300x300")
 ventana_principal.config(bg="lightpink")
 
 tk.Label(ventana_principal, text="Menú Principal", font=("Arial", 14), bg="lightpink").pack(pady=10)
 
 tk.Button(ventana_principal, text="Datos Trabajador", command=abrir_datos_trabajador, width=20).pack(pady=10)
 tk.Button(ventana_principal, text="Solicitar Vacaciones", command=abrir_solicitud, width=20).pack(pady=10)
+tk.Button(ventana_principal, text="Ver Registros", command=abrir_registros, width=20).pack(pady=10)
 tk.Button(ventana_principal, text="Salir", command=ventana_principal.destroy, width=20).pack(pady=30)
 
 ventana_principal.mainloop()

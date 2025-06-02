@@ -2,78 +2,101 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
-def limpiar_area_dinamica():
-    for widget in area_dinamica.winfo_children():
-        widget.destroy()
+datos_trabajadores = []
 
-def pantalla_datos_trabajador():
-    limpiar_area_dinamica()
+def abrir_datos_trabajador():
+    ventana_datos = tk.Toplevel()
+    ventana_datos.title("Registro de asistencia para el hospital")
+    ventana_datos.geometry("400x550")
+    ventana_datos.config(bg="lightgreen")
 
-    tk.Label(area_dinamica, text="Datos del trabajador", font=("Times New Roman", 14), bg="lightgreen").pack(pady=10, fill="x")
+    tk.Label(ventana_datos, text="Datos del trabajador", font=("Times New Roman", 14), bg="lightgreen").pack(pady=10, fill="x")
 
-    tk.Label(area_dinamica, text="Nombre:", bg="lightpink").pack()
-    campo_nombre = tk.Entry(area_dinamica)
-    campo_nombre.pack()
-    
-    tk.Label(area_dinamica, text="Edad:", bg="lightpink").pack()
-    campo_edad = tk.Entry(area_dinamica)
-    campo_edad.pack()
-    
-    tk.Label(area_dinamica, text="Género:", bg="lightpink").pack()
-    campo_gen = tk.Entry(area_dinamica)
-    campo_gen.pack()
-    
-    tk.Label(area_dinamica, text="CURP:", bg="lightpink").pack()
-    campo_CURP = tk.Entry(area_dinamica)
-    campo_CURP.pack()
+    def campo(label_text):
+        tk.Label(ventana_datos, text=label_text, bg="lightpink").pack()
+        entrada = tk.Entry(ventana_datos)
+        entrada.pack()
+        return entrada
 
-    tk.Label(area_dinamica, text="NSS:", bg="lightpink").pack()
-    campo_NSS = tk.Entry(area_dinamica)
-    campo_NSS.pack()
-    
-    tk.Label(area_dinamica, text="Domicilio:", bg="lightpink").pack()
-    campo_dom = tk.Entry(area_dinamica)
-    campo_dom.pack()
+    campo_nombre = campo("Nombre:")
+    campo_edad = campo("Edad:")
 
-    tk.Label(area_dinamica, text="Puesto:", bg="lightpink").pack()
-    campo_puesto = tk.Entry(area_dinamica)
-    campo_puesto.pack()
+    tk.Label(ventana_datos, text="Género:", bg="lightpink").pack()
+    combo_genero = ttk.Combobox(ventana_datos, values=["Femenino", "Masculino"])
+    combo_genero.pack()
+    combo_genero.current(0)
 
-    tk.Label(area_dinamica, text="Turno:", bg="lightpink").pack()
-    combo_turno = ttk.Combobox(area_dinamica, values=["Mañana", "Tarde", "Noche"])
+    campo_CURP = campo("CURP:")
+    campo_NSS = campo("NSS:")
+    campo_dom = campo("Domicilio:")
+    campo_puesto = campo("Puesto:")
+
+    tk.Label(ventana_datos, text="Turno:", bg="lightpink").pack()
+    combo_turno = ttk.Combobox(ventana_datos, values=["Mañana", "Tarde", "Noche"])
     combo_turno.pack()
     combo_turno.current(0)
 
     def mostrar_info():
         nombre = campo_nombre.get()
         edad = campo_edad.get()
-        genero = campo_gen.get()
+        genero = combo_genero.get()
         curp = campo_CURP.get()
         NSS = campo_NSS.get()
-        Domicilio = campo_dom.get()
+        domicilio = campo_dom.get()
         puesto = campo_puesto.get()
         turno = combo_turno.get()
-        mensaje = f"Nombre: {nombre}\nEdad: {edad}\nGenero: {genero}\nCURP: {curp}\nNSS: {NSS}\nDomicilio: {Domicilio}\nPuesto: {puesto}\nTurno: {turno}"
-        messagebox.showinfo("Información del trabajador", mensaje)
 
-    tk.Button(area_dinamica, text="Registrar datos", command=mostrar_info).pack(pady=10)
+        datos = {
+            "Nombre": nombre,
+            "Edad": edad,
+            "Género": genero,
+            "CURP": curp,
+            "NSS": NSS,
+            "Domicilio": domicilio,
+            "Puesto": puesto,
+            "Turno": turno
+        }
 
-def pantalla_solicitud():
-    limpiar_area_dinamica()
+        datos_trabajadores.append(datos)
 
-    tk.Label(area_dinamica, text="Solicitud de Vacaciones", font=("Times New Roman", 14), bg="lightblue").pack(pady=10, fill="x")
+        mensaje = f"Nombre: {nombre}\nEdad: {edad}\nGénero: {genero}\nCURP: {curp}\nNSS: {NSS}\nDomicilio: {domicilio}\nPuesto: {puesto}\nTurno: {turno}"
+        messagebox.showinfo("Datos registrados", mensaje)
 
-    tk.Label(area_dinamica, text="Nombre:", bg="lightpink").pack()
-    entrada_nombre = tk.Entry(area_dinamica)
-    entrada_nombre.pack()
+        ventana_lista = tk.Toplevel()
+        ventana_lista.title("Todos los trabajadores registrados")
+        ventana_lista.geometry("400x400")
+        ventana_lista.config(bg="white")
 
-    tk.Label(area_dinamica, text="Área:", bg="lightpink").pack()
-    entrada_area = tk.Entry(area_dinamica)
-    entrada_area.pack()
+        tk.Label(ventana_lista, text="Lista de trabajadores", font=("Arial", 12, "bold"), bg="lightblue").pack(pady=10, fill="x")
 
-    tk.Label(area_dinamica, text="Días a solicitar:", bg="lightpink").pack()
-    entrada_dias = tk.Entry(area_dinamica)
-    entrada_dias.pack()
+        texto = tk.Text(ventana_lista, wrap="word")
+        texto.pack(expand=True, fill="both", padx=10, pady=5)
+
+        for i, trabajador in enumerate(datos_trabajadores, 1):
+            texto.insert("end", f"Trabajador #{i}:\n")
+            for clave, valor in trabajador.items():
+                texto.insert("end", f"  {clave}: {valor}\n")
+            texto.insert("end", "\n")
+
+    tk.Button(ventana_datos, text="Registrar datos", command=mostrar_info).pack(pady=10)
+
+def abrir_solicitud():
+    ventana_solicitud = tk.Toplevel()
+    ventana_solicitud.title("Solicitud de Vacaciones")
+    ventana_solicitud.geometry("350x350")
+    ventana_solicitud.config(bg="lightblue")
+
+    tk.Label(ventana_solicitud, text="Solicitud de Vacaciones", font=("Times New Roman", 14), bg="lightblue").pack(pady=10, fill="x")
+
+    def campo(label_text):
+        tk.Label(ventana_solicitud, text=label_text, bg="lightpink").pack()
+        entrada = tk.Entry(ventana_solicitud)
+        entrada.pack()
+        return entrada
+
+    entrada_nombre = campo("Nombre:")
+    entrada_area = campo("Área:")
+    entrada_dias = campo("Días a solicitar:")
 
     def enviar():
         nombre = entrada_nombre.get()
@@ -87,22 +110,17 @@ def pantalla_solicitud():
         except ValueError:
             messagebox.showerror("Error", "Por favor ingresa un número válido de días.")
 
-    tk.Button(area_dinamica, text="Enviar Solicitud", command=enviar).pack(pady=15)
+    tk.Button(ventana_solicitud, text="Enviar Solicitud", command=enviar).pack(pady=15)
 
 ventana_principal = tk.Tk()
 ventana_principal.title("Vacaciones Hospital")
-ventana_principal.geometry("520x420")
+ventana_principal.geometry("300x250")
 ventana_principal.config(bg="lightpink")
 
-menu_lateral = tk.Frame(ventana_principal, bg="lightpink", width=140)
-menu_lateral.pack(side="left", fill="y")
+tk.Label(ventana_principal, text="Menú Principal", font=("Arial", 14), bg="lightpink").pack(pady=10)
 
-area_dinamica = tk.Frame(ventana_principal, bg="lightpink")
-area_dinamica.pack(side="right", expand=True, fill="both")
+tk.Button(ventana_principal, text="Datos Trabajador", command=abrir_datos_trabajador, width=20).pack(pady=10)
+tk.Button(ventana_principal, text="Solicitar Vacaciones", command=abrir_solicitud, width=20).pack(pady=10)
+tk.Button(ventana_principal, text="Salir", command=ventana_principal.destroy, width=20).pack(pady=30)
 
-tk.Button(menu_lateral, text="Datos Trabajador", command=pantalla_datos_trabajador, width=18).pack(pady=10)
-tk.Button(menu_lateral, text="Solicitar Vacaciones", command=pantalla_solicitud, width=18).pack(pady=10)
-tk.Button(menu_lateral, text="Salir", command=ventana_principal.destroy, width=18).pack(pady=30)
-
-pantalla_datos_trabajador()
 ventana_principal.mainloop()

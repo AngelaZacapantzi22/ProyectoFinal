@@ -1,4 +1,4 @@
-mport tkinter as tk
+import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
@@ -54,11 +54,11 @@ def abrir_datos_trabajador():
             "NSS": NSS,
             "Domicilio": domicilio,
             "Puesto": puesto,
-            "Turno": turno
+            "Turno": turno,
+            "Vacaciones": "No solicitadas"
         }
 
-        datos_trabajadores.append(datos) 
-
+        datos_trabajadores.append(datos)
         messagebox.showinfo("Datos registrados", "Los datos se registraron correctamente.")
 
     tk.Button(ventana_datos, text="Registrar datos", command=mostrar_info).pack(pady=10)
@@ -82,14 +82,26 @@ def abrir_solicitud():
     entrada_dias = campo("Días a solicitar:")
 
     def enviar():
-        nombre = entrada_nombre.get()
-        area = entrada_area.get()
+        nombre = entrada_nombre.get().strip()
+        area = entrada_area.get().strip()
         try:
             dias = int(entrada_dias.get())
             if dias <= 0:
                 raise ValueError
-            mensaje = f"Solicitud enviada:\nNombre: {nombre}\nÁrea: {area}\nDías: {dias}"
-            messagebox.showinfo("Confirmación", mensaje)
+
+            encontrado = False
+            for trabajador in datos_trabajadores:
+                if trabajador["Nombre"].strip().lower() == nombre.lower():
+                    trabajador["Vacaciones"] = f"Solicitadas - Área: {area}, Días: {dias}"
+                    encontrado = True
+                    break
+
+            if not encontrado:
+                messagebox.showwarning("No encontrado", "Este nombre no está registrado como trabajador.")
+
+            else:
+                messagebox.showinfo("Confirmación", f"Solicitud enviada:\nNombre: {nombre}\nÁrea: {area}\nDías: {dias}")
+
         except ValueError:
             messagebox.showerror("Error", "Por favor ingresa un número válido de días.")
 
@@ -98,8 +110,8 @@ def abrir_solicitud():
 def abrir_registros():
     ventana_registros = tk.Toplevel()
     ventana_registros.title("Registros de Trabajadores")
-    ventana_registros.geometry("450x400")
-    ventana_registros.config(bg="white")
+    ventana_registros.geometry("480x400")
+    ventana_registros.config(bg="lightblue")
 
     tk.Label(ventana_registros, text="Lista de trabajadores registrados", font=("Arial", 12, "bold"), bg="lightblue").pack(pady=10, fill="x")
 
@@ -117,7 +129,7 @@ def abrir_registros():
 
 ventana_principal = tk.Tk()
 ventana_principal.title("Vacaciones Hospital")
-ventana_principal.geometry("300x300")
+ventana_principal.geometry("300x330")
 ventana_principal.config(bg="lightpink")
 
 tk.Label(ventana_principal, text="Menú Principal", font=("Arial", 14), bg="lightpink").pack(pady=10)

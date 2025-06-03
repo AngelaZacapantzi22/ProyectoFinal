@@ -1,8 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+from datetime import datetime
 
+# Listas globales
 datos_trabajadores = []
+registro_asistencia = []
 
 def abrir_datos_trabajador():
     ventana_datos = tk.Toplevel()
@@ -27,7 +30,7 @@ def abrir_datos_trabajador():
     combo_genero.current(0)
 
     campo_CURP = campo("CURP:")
-    campo_NSS = campo("NSS:")
+    campo_num_control = campo("Número de control:")
     campo_dom = campo("Domicilio:")
     campo_puesto = campo("Puesto:")
 
@@ -41,17 +44,21 @@ def abrir_datos_trabajador():
         edad = campo_edad.get()
         genero = combo_genero.get()
         curp = campo_CURP.get()
-        NSS = campo_NSS.get()
+        num_control = campo_num_control.get()
         domicilio = campo_dom.get()
         puesto = campo_puesto.get()
         turno = combo_turno.get()
+
+        if not nombre or not num_control:
+            messagebox.showerror("Error", "Nombre y Número de control son obligatorios.")
+            return
 
         datos = {
             "Nombre": nombre,
             "Edad": edad,
             "Género": genero,
             "CURP": curp,
-            "NSS": NSS,
+            "Número de control": num_control,
             "Domicilio": domicilio,
             "Puesto": puesto,
             "Turno": turno,
@@ -60,6 +67,7 @@ def abrir_datos_trabajador():
 
         datos_trabajadores.append(datos)
         messagebox.showinfo("Datos registrados", "Los datos se registraron correctamente.")
+        ventana_datos.destroy()
 
     tk.Button(ventana_datos, text="Registrar datos", command=mostrar_info).pack(pady=10)
 
@@ -98,7 +106,6 @@ def abrir_solicitud():
 
             if not encontrado:
                 messagebox.showwarning("No encontrado", "Este nombre no está registrado como trabajador.")
-
             else:
                 messagebox.showinfo("Confirmación", f"Solicitud enviada:\nNombre: {nombre}\nÁrea: {area}\nDías: {dias}")
 
@@ -111,7 +118,7 @@ def abrir_registros():
     ventana_registros = tk.Toplevel()
     ventana_registros.title("Registros de Trabajadores")
     ventana_registros.geometry("480x400")
-    ventana_registros.config(bg="lightblue")
+    ventana_registros.config(bg="white")
 
     tk.Label(ventana_registros, text="Lista de trabajadores registrados", font=("Arial", 12, "bold"), bg="lightblue").pack(pady=10, fill="x")
 
@@ -127,16 +134,121 @@ def abrir_registros():
     else:
         texto.insert("end", "No hay trabajadores registrados aún.")
 
+def abrir_registro_asistencia():
+    ventana_asistencia = tk.Toplevel()
+    ventana_asistencia.title("Registro de Asistencia")
+    ventana_asistencia.geometry("350x300")
+    ventana_asistencia.config(bg="lightyellow")
+
+    tk.Label(ventana_asistencia, text="Registro de Asistencia", font=("Times New Roman", 14), bg="lightyellow").pack(pady=10, fill="x")
+
+    def campo(label_text):
+        tk.Label(ventana_asistencia, text=label_text, bg="lightpink").pack()
+        entrada = tk.Entry(ventana_asistencia)
+        entrada.pack()
+        return entrada
+
+    entrada_num_control = campo("Número de control:")
+    entrada_hora = campo("Hora de llegada (HH:MM):")
+
+    tk.Label(ventana_asistencia, text="Turno:", bg="lightpink").pack()
+    combo_turno = ttk.Combobox(ventana_asistencia, values=["Mañana", "Tarde", "Noche"])
+    combo_turno.pack()
+    combo_turno.current(0)
+
+    def registrar():
+        num_control = entrada_num_control.get().strip()
+        hora_llegada = entrada_hora.get().strip()
+        turno = combo_turno.get()
+
+        if not num_control or not hora_llegada:
+            messagebox.showerror("Error", "Número de control y hora de llegada son obligatorios.")
+            return
+
+        try:
+            tiempo_llegada = datetime.strptime(hora_llegada, "%H:%M").time()
+        except ValueError:
+            messagebox.showerror("Error", "Formato de hora incorrecto. Usa HH:MM (ejemplo 06:45).")
+            return
+
+        trabajador_encontrado = None
+        for t in datos_trabajadores:
+            if t["Número de control"] == num_control:
+                trabajador_encontrado = t
+                break
+
+        if not trabajador_encontrado:
+            messagebox.showerror("Error", "Número de control no registrado.")
+            return
+
+        estado = "No aplica"
+        if turno == "Mañana":
+            hora_limite = datetime.strptime("07:00", "%H:%M").time()
+            if tiempo_llegada > hora_limite:
+                estado = "Retraso"
+            else:
+                estado = "A tiempo"
+        if turno == "Tarde":
+            hora_limite = datetime.strptime("14:00", "%H:%M").time()
+            if tiempo_llegada > hora_limite:
+                estado = "Retraso"
+            else:
+                estado = "A tiempo"
+        if turno == "Noche":
+            hora_limite = datetime.strptime("20:00", "%H:%M").time()
+            if tiempo_llegada > hora_limite:
+                estado = "Retraso"
+            else:
+                estado = "A tiempo"
+
+
+        asistencia = {
+            "Número de control": num_control,
+            "Nombre": trabajador_encontrado["Nombre"],
+            "Hora llegada": hora_llegada,
+            "Turno": turno,
+            "Estado": estado
+        }
+
+        registro_asistencia.append(asistencia)
+        messagebox.showinfo("Asistencia registrada", f"Asistencia registrada para {asistencia['Nombre']}.\nEstado: {estado}")
+        ventana_asistencia.destroy()
+
+    tk.Button(ventana_asistencia, text="Registrar asistencia", command=registrar).pack(pady=15)
+
+def abrir_registro_asistencia_mostrar():
+    ventana_mostrar = tk.Toplevel()
+    ventana_mostrar.title("Registros de Asistencia")
+    ventana_mostrar.geometry("450x400")
+    ventana_mostrar.config(bg="white")
+
+    tk.Label(ventana_mostrar, text="Registros de Asistencia", font=("Arial", 12, "bold"), bg="lightblue").pack(pady=10, fill="x")
+    
+    
+    texto = tk.Text(ventana_mostrar, wrap="word")
+    texto.pack(expand=True, fill="both", padx=10, pady=5)
+
+    if registro_asistencia:
+        for i, reg in enumerate(registro_asistencia, 1):
+            texto.insert("end", f"Registro #{i}:\n")
+            for clave, valor in reg.items():
+                texto.insert("end", f"  {clave}: {valor}\n")
+            texto.insert("end", "\n")
+    else:
+        texto.insert("end", "No hay registros de asistencia.")
+
 ventana_principal = tk.Tk()
 ventana_principal.title("Vacaciones Hospital")
-ventana_principal.geometry("300x330")
+ventana_principal.geometry("320x420")
 ventana_principal.config(bg="lightpink")
 
 tk.Label(ventana_principal, text="Menú Principal", font=("Arial", 14), bg="lightpink").pack(pady=10)
 
-tk.Button(ventana_principal, text="Datos Trabajador", command=abrir_datos_trabajador, width=20).pack(pady=10)
-tk.Button(ventana_principal, text="Solicitar Vacaciones", command=abrir_solicitud, width=20).pack(pady=10)
-tk.Button(ventana_principal, text="Ver Registros", command=abrir_registros, width=20).pack(pady=10)
-tk.Button(ventana_principal, text="Salir", command=ventana_principal.destroy, width=20).pack(pady=30)
+tk.Button(ventana_principal, text="Datos Trabajador", command=abrir_datos_trabajador, width=25).pack(pady=10)
+tk.Button(ventana_principal, text="Solicitar Vacaciones", command=abrir_solicitud, width=25).pack(pady=10)
+tk.Button(ventana_principal, text="Registrar Asistencia", command=abrir_registro_asistencia, width=25).pack(pady=10)
+tk.Button(ventana_principal, text="Ver Registros Trabajadores", command=abrir_registros, width=25).pack(pady=10)
+tk.Button(ventana_principal, text="Ver Registros Asistencia", command=abrir_registro_asistencia_mostrar, width=25).pack(pady=10)
+tk.Button(ventana_principal, text="Salir", command=ventana_principal.destroy, width=25).pack(pady=15)
 
 ventana_principal.mainloop()

@@ -3,7 +3,6 @@ from tkinter import messagebox
 from tkinter import ttk
 from datetime import datetime
 
-# Listas globales
 datos_trabajadores = []
 registro_asistencia = []
 
@@ -62,7 +61,9 @@ def abrir_datos_trabajador():
             "Domicilio": domicilio,
             "Puesto": puesto,
             "Turno": turno,
-            "Vacaciones": "No solicitadas"
+            "Vacaciones": "No solicitadas",
+            "Retardos menores": 0,
+            "Retardos mayores": 0
         }
 
         datos_trabajadores.append(datos)
@@ -105,7 +106,7 @@ def abrir_solicitud():
                     break
 
             if not encontrado:
-                messagebox.showwarning("No encontrado", "Este nombre no está registrado como trabajador.")
+                messagebox.showwarning("No encontrado", "Este nombre no está registrado como un trabajador")
             else:
                 messagebox.showinfo("Confirmación", f"Solicitud enviada:\nNombre: {nombre}\nÁrea: {area}\nDías: {dias}")
 
@@ -181,26 +182,39 @@ def abrir_registro_asistencia():
             messagebox.showerror("Error", "Número de control no registrado.")
             return
 
-        estado = "No aplica"
-        if turno == "Mañana":
-            hora_limite = datetime.strptime("07:00", "%H:%M").time()
-            if tiempo_llegada > hora_limite:
-                estado = "Retraso"
-            else:
-                estado = "A tiempo"
-        if turno == "Tarde":
-            hora_limite = datetime.strptime("14:00", "%H:%M").time()
-            if tiempo_llegada > hora_limite:
-                estado = "Retraso"
-            else:
-                estado = "A tiempo"
-        if turno == "Noche":
-            hora_limite = datetime.strptime("20:00", "%H:%M").time()
-            if tiempo_llegada > hora_limite:
-                estado = "Retraso"
-            else:
-                estado = "A tiempo"
+        hora_limite = {
+            "Mañana": "07:00",
+            "Tarde": "14:00",
+            "Noche": "20:00"
+        }[turno]
 
+        limite = datetime.strptime(hora_limite, "%H:%M").time()
+        diferencia = (datetime.combine(datetime.today(), tiempo_llegada) - datetime.combine(datetime.today(), limite)).total_seconds() / 60
+
+        if diferencia <= 0:
+            estado = "A tiempo"
+        elif diferencia <= 10:
+            estado = "Retardo menor"
+            trabajador_encontrado["Retardos menores"] += 1
+        else:
+            estado = "Retardo mayor"
+            trabajador_encontrado["Retardos mayores"] += 1
+
+        descuento = 0
+        mensaje_descuento = ""
+
+        if trabajador_encontrado["Retardos menores"] > 3:
+            descuento += 2000
+            mensaje_descuento += "Descuento por retardos menores: $2000\n"
+
+        if trabajador_encontrado["Retardos mayores"] > 2:
+            descuento += 5000
+            mensaje_descuento += "Descuento por retardos mayores: $5000\n"
+
+        if descuento > 0:
+            mensaje_descuento += f"Total descontado: ${descuento}\n"
+        else:
+            mensaje_descuento = "Sin descuentos aplicados."
 
         asistencia = {
             "Número de control": num_control,
@@ -211,7 +225,14 @@ def abrir_registro_asistencia():
         }
 
         registro_asistencia.append(asistencia)
-        messagebox.showinfo("Asistencia registrada", f"Asistencia registrada para {asistencia['Nombre']}.\nEstado: {estado}")
+
+        messagebox.showinfo(
+            "Asistencia registrada",
+            f"Asistencia registrada para {asistencia['Nombre']}.\nEstado: {estado}\n\n"
+            f"Retardos menores: {trabajador_encontrado['Retardos menores']}\n"
+            f"Retardos mayores: {trabajador_encontrado['Retardos mayores']}\n\n"
+            f"{mensaje_descuento}"
+        )
         ventana_asistencia.destroy()
 
     tk.Button(ventana_asistencia, text="Registrar asistencia", command=registrar).pack(pady=15)
@@ -223,8 +244,7 @@ def abrir_registro_asistencia_mostrar():
     ventana_mostrar.config(bg="white")
 
     tk.Label(ventana_mostrar, text="Registros de Asistencia", font=("Arial", 12, "bold"), bg="lightblue").pack(pady=10, fill="x")
-    
-    
+
     texto = tk.Text(ventana_mostrar, wrap="word")
     texto.pack(expand=True, fill="both", padx=10, pady=5)
 
@@ -242,7 +262,7 @@ ventana_principal.title("Vacaciones Hospital")
 ventana_principal.geometry("320x420")
 ventana_principal.config(bg="lightpink")
 
-tk.Label(ventana_principal, text="Menú Principal", font=("Arial", 14), bg="lightpink").pack(pady=10)
+tk.Label(ventana_principal, text="Menú Principal del\n hospital", font=("Times New Roman", 14), bg="lightpink").pack(pady=10)
 
 tk.Button(ventana_principal, text="Datos Trabajador", command=abrir_datos_trabajador, width=25).pack(pady=10)
 tk.Button(ventana_principal, text="Solicitar Vacaciones", command=abrir_solicitud, width=25).pack(pady=10)
@@ -252,3 +272,4 @@ tk.Button(ventana_principal, text="Ver Registros Asistencia", command=abrir_regi
 tk.Button(ventana_principal, text="Salir", command=ventana_principal.destroy, width=25).pack(pady=15)
 
 ventana_principal.mainloop()
+

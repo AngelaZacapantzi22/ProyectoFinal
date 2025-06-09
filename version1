@@ -10,12 +10,12 @@ def abrir_datos_trabajador():
     ventana_datos = tk.Toplevel()
     ventana_datos.title("Registro de asistencia para el hospital")
     ventana_datos.geometry("400x550")
-    ventana_datos.config(bg="lightgreen")
+    ventana_datos.config(bg="Slategray1")
 
-    tk.Label(ventana_datos, text="Datos del trabajador", font=("Times New Roman", 14), bg="lightgreen").pack(pady=10, fill="x")
+    tk.Label(ventana_datos, text="Datos del trabajador", font=("Times New Roman", 14), bg="white").pack(pady=10, fill="x")
 
     def campo(label_text):
-        tk.Label(ventana_datos, text=label_text, bg="lightpink").pack()
+        tk.Label(ventana_datos, text=label_text, bg="lightgray").pack()
         entrada = tk.Entry(ventana_datos)
         entrada.pack()
         return entrada
@@ -23,7 +23,7 @@ def abrir_datos_trabajador():
     campo_nombre = campo("Nombre:")
     campo_edad = campo("Edad:")
 
-    tk.Label(ventana_datos, text="Género:", bg="lightpink").pack()
+    tk.Label(ventana_datos, text="Género:", bg="lightgray").pack()
     combo_genero = ttk.Combobox(ventana_datos, values=["Femenino", "Masculino"])
     combo_genero.pack()
     combo_genero.current(0)
@@ -33,7 +33,7 @@ def abrir_datos_trabajador():
     campo_dom = campo("Domicilio:")
     campo_puesto = campo("Puesto:")
 
-    tk.Label(ventana_datos, text="Turno:", bg="lightpink").pack()
+    tk.Label(ventana_datos, text="Turno:", bg="lightgray").pack()
     combo_turno = ttk.Combobox(ventana_datos, values=["Mañana", "Tarde", "Noche"])
     combo_turno.pack()
     combo_turno.current(0)
@@ -76,12 +76,12 @@ def abrir_solicitud():
     ventana_solicitud = tk.Toplevel()
     ventana_solicitud.title("Solicitud de Vacaciones")
     ventana_solicitud.geometry("350x350")
-    ventana_solicitud.config(bg="lightblue")
+    ventana_solicitud.config(bg="Slategray1")
 
-    tk.Label(ventana_solicitud, text="Solicitud de Vacaciones", font=("Times New Roman", 14), bg="lightblue").pack(pady=10, fill="x")
+    tk.Label(ventana_solicitud, text="Solicitud de Vacaciones", font=("Times New Roman", 14), bg="white").pack(pady=10, fill="x")
 
     def campo(label_text):
-        tk.Label(ventana_solicitud, text=label_text, bg="lightpink").pack()
+        tk.Label(ventana_solicitud, text=label_text, bg="lightgray").pack()
         entrada = tk.Entry(ventana_solicitud)
         entrada.pack()
         return entrada
@@ -121,7 +121,7 @@ def abrir_registros():
     ventana_registros.geometry("480x400")
     ventana_registros.config(bg="white")
 
-    tk.Label(ventana_registros, text="Lista de trabajadores registrados", font=("Arial", 12, "bold"), bg="lightblue").pack(pady=10, fill="x")
+    tk.Label(ventana_registros, text="Lista de trabajadores registrados", font=("Arial", 12, "bold"), bg="white").pack(pady=10, fill="x")
 
     texto = tk.Text(ventana_registros, wrap="word")
     texto.pack(expand=True, fill="both", padx=10, pady=5)
@@ -139,12 +139,12 @@ def abrir_registro_asistencia():
     ventana_asistencia = tk.Toplevel()
     ventana_asistencia.title("Registro de Asistencia")
     ventana_asistencia.geometry("350x300")
-    ventana_asistencia.config(bg="lightyellow")
+    ventana_asistencia.config(bg="Slategray1")
 
-    tk.Label(ventana_asistencia, text="Registro de Asistencia", font=("Times New Roman", 14), bg="lightyellow").pack(pady=10, fill="x")
+    tk.Label(ventana_asistencia, text="Registro de Asistencia", font=("Times New Roman", 14), bg="white").pack(pady=10, fill="x")
 
     def campo(label_text):
-        tk.Label(ventana_asistencia, text=label_text, bg="lightpink").pack()
+        tk.Label(ventana_asistencia, text=label_text, bg="lightgray").pack()
         entrada = tk.Entry(ventana_asistencia)
         entrada.pack()
         return entrada
@@ -152,7 +152,7 @@ def abrir_registro_asistencia():
     entrada_num_control = campo("Número de control:")
     entrada_hora = campo("Hora de llegada (HH:MM):")
 
-    tk.Label(ventana_asistencia, text="Turno:", bg="lightpink").pack()
+    tk.Label(ventana_asistencia, text="Turno:", bg="lightgray").pack()
     combo_turno = ttk.Combobox(ventana_asistencia, values=["Mañana", "Tarde", "Noche"])
     combo_turno.pack()
     combo_turno.current(0)
@@ -243,7 +243,7 @@ def abrir_registro_asistencia_mostrar():
     ventana_mostrar.geometry("450x400")
     ventana_mostrar.config(bg="white")
 
-    tk.Label(ventana_mostrar, text="Registros de Asistencia", font=("Arial", 12, "bold"), bg="lightblue").pack(pady=10, fill="x")
+    tk.Label(ventana_mostrar, text="Registros de Asistencia", font=("Arial", 12, "bold"), bg="white").pack(pady=10, fill="x")
 
     texto = tk.Text(ventana_mostrar, wrap="word")
     texto.pack(expand=True, fill="both", padx=10, pady=5)
@@ -260,9 +260,9 @@ def abrir_registro_asistencia_mostrar():
 ventana_principal = tk.Tk()
 ventana_principal.title("Vacaciones Hospital")
 ventana_principal.geometry("320x420")
-ventana_principal.config(bg="lightpink")
+ventana_principal.config(bg="Slategray1")
 
-tk.Label(ventana_principal, text="Menú Principal del\n hospital", font=("Times New Roman", 14), bg="lightpink").pack(pady=10)
+tk.Label(ventana_principal, text="Menú Principal del\n hospital", font=("Times New Roman", 14), bg="Slategray1").pack(pady=10)
 
 tk.Button(ventana_principal, text="Datos Trabajador", command=abrir_datos_trabajador, width=25).pack(pady=10)
 tk.Button(ventana_principal, text="Solicitar Vacaciones", command=abrir_solicitud, width=25).pack(pady=10)
@@ -272,4 +272,3 @@ tk.Button(ventana_principal, text="Ver Registros Asistencia", command=abrir_regi
 tk.Button(ventana_principal, text="Salir", command=ventana_principal.destroy, width=25).pack(pady=15)
 
 ventana_principal.mainloop()
-

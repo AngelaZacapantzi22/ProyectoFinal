@@ -52,6 +52,11 @@ def abrir_datos_trabajador():
             messagebox.showerror("Error", "Nombre y Número de control son obligatorios.")
             return
 
+        for trabajador in datos_trabajadores:
+            if trabajador["Número de control"] == num_control:
+                messagebox.showerror("Error", "Este número de control ya está registrado.")
+                return
+
         datos = {
             "Nombre": nombre,
             "Edad": edad,
@@ -138,10 +143,19 @@ def abrir_registros():
 def abrir_registro_asistencia():
     ventana_asistencia = tk.Toplevel()
     ventana_asistencia.title("Registro de Asistencia")
-    ventana_asistencia.geometry("350x300")
+    ventana_asistencia.geometry("350x320")
     ventana_asistencia.config(bg="Slategray1")
 
     tk.Label(ventana_asistencia, text="Registro de Asistencia", font=("Times New Roman", 14), bg="white").pack(pady=10, fill="x")
+
+    tk.Label(
+        ventana_asistencia,
+        text="Horarios permitidos:\nMañana: 07:00-14:00\nTarde: 14:00-20:00\nNoche: 20:00-07:00",
+        bg="Slategray1",
+        fg="darkblue",
+        font=("Arial", 10),
+        justify="left"
+    ).pack(pady=5)
 
     def campo(label_text):
         tk.Label(ventana_asistencia, text=label_text, bg="lightgray").pack()
